@@ -1,0 +1,341 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import type { Student, ClassGroup, PointRecord, AttendanceRecord, Teacher, StudentStats } from '../types';
+import { mockStudents, mockClasses, mockPoints, mockAttendance, mockTeachers } from '../lib/mockData';
+import { nanoid } from 'nanoid';
+import { getSupabase } from '../lib/supabase';
+import { toast } from 'sonner';
+import { startOfWeek, startOfMonth } from 'date-fns';
+
+export type RankingPeriod = 'balance' | 'week' | 'month';
+
+interface DataContextType {
+  students: Student[];
+  classes: ClassGroup[];
+  points: PointRecord[];
+  attendance: AttendanceRecord[];
+  teachers: Teacher[];
+  currentUser: Teacher | null;
+  isOnline: boolean;
+  login: (pin: string) => boolean;
+  logout: () => void;
+  addPoint: (studentId: string, amount: number, reason: string, type: PointRecord['type']) => Promise<void>;
+  redeemPoints: (studentId: string, amount: number, item: string) => Promise<void>;
+  markAttendance: (studentId: string, status: AttendanceRecord['status'], date?: string) => Promise<void>;
+  addClass: (name: string) => Promise<void>;
+  addStudent: (name: string, classId: string, avatar?: string) => Promise<void>;
+  deleteClass: (id: string) => Promise<void>;
+  deleteStudent: (id: string) => Promise<void>;
+  getStudentStats: (studentId: string) => StudentStats;
+  getAllStudentStats: (period?: RankingPeriod) => StudentStats[];
+  refreshData: () => Promise<void>;
+}
+
+const DataContext = createContext<DataContextType | undefined>(undefined);
+
+export function DataProvider({ children }: { children: React.ReactNode }) {
+  const [students, setStudents] = useState<Student[]>([]);
+  const [classes, setClasses] = useState<ClassGroup[]>([]);
+  const [points, setPoints] = useState<PointRecord[]>([]);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [teachers] = useState<Teacher[]>(mockTeachers);
+  const [currentUser, setCurrentUser] = useState<Teacher | null>(null);
+  const [isOnline, setIsOnline] = useState(false);
+
+  const supabase = getSupabase();
+
+  const loadLocalData = useCallback(() => {
+    const s_students = localStorage.getItem('smd_students');
+    const s_classes = localStorage.getItem('smd_classes');
+    const s_points = localStorage.getItem('smd_points');
+    const s_attendance = localStorage.getItem('smd_attendance');
+    
+    setStudents(s_students ? JSON.parse(s_students) : mockStudents);
+    setClasses(s_classes ? JSON.parse(s_classes) : mockClasses);
+    setPoints(s_points ? JSON.parse(s_points) : mockPoints);
+    setAttendance(s_attendance ? JSON.parse(s_attendance) : mockAttendance);
+  }, []);
+
+  const loadRemoteData = useCallback(async () => {
+    if (!supabase) return;
+    try {
+      const [resPoints, resAttendance, resStudents, resClasses] = await Promise.all([
+        supabase.from('points').select('*').order('timestamp', { ascending: false }),
+        supabase.from('attendance').select('*'),
+        supabase.from('students').select('*'),
+        supabase.from('classes').select('*')
+      ]);
+
+      if (resPoints.data) setPoints(resPoints.data);
+      if (resAttendance.data) setAttendance(resAttendance.data);
+      if (resStudents.data) setStudents(resStudents.data);
+      if (resClasses.data) setClasses(resClasses.data);
+      
+      setIsOnline(true);
+    } catch (e) {
+      console.error('Remote sync failed', e);
+      toast.error('Sync failed, falling back to local');
+      setIsOnline(false);
+      loadLocalData();
+    }
+  }, [supabase, loadLocalData]);
+
+  useEffect(() => {
+    if (supabase) {
+      loadRemoteData();
+      
+      const pointsSub = supabase.channel('public:points')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'points' }, payload => {
+          // Check if point ID already exists before adding
+          setPoints(prev => {
+            const exists = prev.some(p => p.id === payload.new.id);
+            if (exists) return prev;
+            return [payload.new as PointRecord, ...prev];
+          });
+        })
+        .subscribe();
+        
+      const attSub = supabase.channel('public:attendance')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance' }, () => {
+          supabase.from('attendance').select('*').then(res => {
+             if (res.data) setAttendance(res.data);
+          });
+        })
+        .subscribe();
+      
+      const metaSub = supabase.channel('public:meta')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, () => {
+          supabase.from('students').select('*').then(res => {
+             if (res.data) setStudents(res.data);
+          });
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'classes' }, () => {
+          supabase.from('classes').select('*').then(res => {
+             if (res.data) setClasses(res.data);
+          });
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(pointsSub);
+        supabase.removeChannel(attSub);
+        supabase.removeChannel(metaSub);
+      };
+
+    } else {
+      loadLocalData();
+      setIsOnline(false);
+    }
+  }, [supabase, loadRemoteData, loadLocalData]);
+
+  useEffect(() => {
+    localStorage.setItem('smd_points', JSON.stringify(points));
+    localStorage.setItem('smd_attendance', JSON.stringify(attendance));
+    localStorage.setItem('smd_students', JSON.stringify(students));
+    localStorage.setItem('smd_classes', JSON.stringify(classes));
+  }, [points, attendance, students, classes]);
+
+  const login = (pin: string) => {
+    const teacher = teachers.find(t => t.pin === pin);
+    if (teacher) {
+      setCurrentUser(teacher);
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => setCurrentUser(null);
+
+  const addPoint = async (studentId: string, amount: number, reason: string, type: PointRecord['type']) => {
+    const newPoint: PointRecord = {
+      id: nanoid(),
+      studentId,
+      amount,
+      reason,
+      timestamp: Date.now(),
+      type
+    };
+
+    if (isOnline && supabase) {
+       // Optimistic update
+       setPoints(prev => [newPoint, ...prev]);
+       
+       const { error } = await supabase.from('points').insert(newPoint);
+       if (error) {
+         toast.error('Failed to save point to cloud');
+         console.error(error);
+         // Rollback if needed, but for simplicity we keep it or reload
+         // ideally we should remove it from state if failed
+         setPoints(prev => prev.filter(p => p.id !== newPoint.id));
+       }
+    } else {
+      setPoints(prev => [newPoint, ...prev]);
+    }
+  };
+
+  const redeemPoints = async (studentId: string, amount: number, item: string) => {
+    const cost = Math.abs(amount) * -1;
+    
+    const stats = getStudentStats(studentId);
+    if (stats.currentBalance < Math.abs(amount)) {
+      toast.warning('Warning: Student balance will be negative');
+    }
+
+    await addPoint(studentId, cost, `Redeemed: ${item}`, 'redemption');
+  };
+
+  const markAttendance = async (studentId: string, status: AttendanceRecord['status'], date: string = new Date().toISOString().split('T')[0]) => {
+     if (isOnline && supabase) {
+       const { data: existing } = await supabase.from('attendance')
+          .select('id')
+          .eq('studentId', studentId)
+          .eq('date', date)
+          .single();
+       
+       if (existing) {
+         await supabase.from('attendance').update({ status }).eq('id', existing.id);
+       } else {
+         await supabase.from('attendance').insert({
+            id: nanoid(),
+            studentId,
+            date,
+            status
+         });
+       }
+       supabase.from('attendance').select('*').then(res => {
+           if (res.data) setAttendance(res.data);
+       });
+     } else {
+        setAttendance(prev => {
+          const filtered = prev.filter(r => !(r.studentId === studentId && r.date === date));
+          return [...filtered, { id: nanoid(), studentId, date, status }];
+        });
+     }
+  };
+
+  const addClass = async (name: string) => {
+    const newClass: ClassGroup = { id: nanoid(), name };
+    if (isOnline && supabase) {
+      setClasses(prev => [...prev, newClass]);
+      const { error } = await supabase.from('classes').insert(newClass);
+      if (error) {
+        toast.error('Failed to add class');
+        setClasses(prev => prev.filter(c => c.id !== newClass.id));
+      } else {
+        toast.success('Class added!');
+      }
+    } else {
+      setClasses(prev => [...prev, newClass]);
+      toast.success('Class added locally');
+    }
+  };
+
+  const addStudent = async (name: string, classId: string, avatar?: string) => {
+    const newStudent: Student = {
+      id: nanoid(),
+      name,
+      classId,
+      avatar: avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
+    };
+    if (isOnline && supabase) {
+      setStudents(prev => [...prev, newStudent]);
+      const { error } = await supabase.from('students').insert(newStudent);
+      if (error) {
+        toast.error('Failed to add student');
+        setStudents(prev => prev.filter(s => s.id !== newStudent.id));
+      } else {
+        toast.success('Student added!');
+      }
+    } else {
+      setStudents(prev => [...prev, newStudent]);
+      toast.success('Student added locally');
+    }
+  };
+
+  const deleteClass = async (id: string) => {
+    if (isOnline && supabase) {
+      setClasses(prev => prev.filter(c => c.id !== id));
+      const { error } = await supabase.from('classes').delete().eq('id', id);
+      if (error) {
+        toast.error('Failed to delete class');
+        loadRemoteData(); // Reload to restore
+      } else {
+        toast.success('Class deleted!');
+      }
+    } else {
+      setClasses(prev => prev.filter(c => c.id !== id));
+      toast.success('Class deleted locally');
+    }
+  };
+
+  const deleteStudent = async (id: string) => {
+    if (isOnline && supabase) {
+      setStudents(prev => prev.filter(s => s.id !== id));
+      const { error } = await supabase.from('students').delete().eq('id', id);
+      if (error) {
+        toast.error('Failed to delete student');
+        loadRemoteData();
+      } else {
+        toast.success('Student deleted!');
+      }
+    } else {
+      setStudents(prev => prev.filter(s => s.id !== id));
+      toast.success('Student deleted locally');
+    }
+  };
+
+  const getStudentStats = (studentId: string): StudentStats => {
+    const student = students.find(s => s.id === studentId)!;
+    if (!student) return { student: {id: studentId, name: 'Unknown', classId: '0', avatar: ''}, currentBalance:0, weeklyPoints:0, monthlyPoints:0, attendanceRate:0, rank:0 };
+
+    const studentPoints = points.filter(p => p.studentId === studentId);
+    
+    const now = new Date();
+    const weekStart = startOfWeek(now, { weekStartsOn: 1 }).getTime();
+    const monthStart = startOfMonth(now).getTime();
+
+    const currentBalance = studentPoints.reduce((sum, p) => sum + p.amount, 0);
+    const performancePoints = studentPoints.filter(p => p.amount > 0);
+
+    const weeklyPoints = performancePoints.filter(p => p.timestamp >= weekStart).reduce((sum, p) => sum + p.amount, 0);
+    const monthlyPoints = performancePoints.filter(p => p.timestamp >= monthStart).reduce((sum, p) => sum + p.amount, 0);
+
+    const studentAttendance = attendance.filter(a => a.studentId === studentId);
+    const presentCount = studentAttendance.filter(a => a.status === 'present').length;
+    const totalDays = studentAttendance.length || 1;
+    const attendanceRate = Math.round((presentCount / totalDays) * 100);
+
+    return {
+      student,
+      currentBalance,
+      weeklyPoints,
+      monthlyPoints,
+      attendanceRate,
+      rank: 0
+    };
+  };
+
+  const getAllStudentStats = (period: RankingPeriod = 'balance'): StudentStats[] => {
+    const stats = students.map(s => getStudentStats(s.id));
+    
+    return stats.sort((a, b) => {
+      if (period === 'week') return b.weeklyPoints - a.weeklyPoints;
+      if (period === 'month') return b.monthlyPoints - a.monthlyPoints;
+      return b.currentBalance - a.currentBalance;
+    }).map((s, i) => ({ ...s, rank: i + 1 }));
+  };
+
+  return (
+    <DataContext.Provider value={{
+      students, classes, points, attendance, teachers, currentUser, isOnline,
+      login, logout, addPoint, redeemPoints, markAttendance, addClass, addStudent, deleteClass, deleteStudent, getStudentStats, getAllStudentStats, refreshData: loadRemoteData
+    }}>
+      {children}
+    </DataContext.Provider>
+  );
+}
+
+export const useData = () => {
+  const context = useContext(DataContext);
+  if (!context) throw new Error('useData must be used within DataProvider');
+  return context;
+};

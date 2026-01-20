@@ -1,0 +1,89 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-mono: "Fira Code", monospace;
+  --font-sans: "Noto Sans SC", sans-serif;
+
+  --color-brand-blue: #2563EB;
+  --color-brand-orange: #F97316;
+  --color-brand-slate: #1E293B;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  /* Future Friendly / STEM Theme (Light Mode) */
+  --background: #F8FAFC; /* Slate-50 */
+  --foreground: #1E293B; /* Slate-800 */
+
+  --card: rgba(255, 255, 255, 0.7);
+  --card-foreground: #1E293B;
+
+  --primary: #2563EB; /* Royal Blue */
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #E2E8F0; /* Slate-200 */
+  --secondary-foreground: #1E293B;
+
+  --accent: #F97316; /* Vibrant Orange */
+  --accent-foreground: #FFFFFF;
+
+  --muted: #F1F5F9; /* Slate-100 */
+  --muted-foreground: #64748B; /* Slate-500 */
+
+  --border: #E2E8F0; /* Slate-200 */
+  --input: #E2E8F0;
+  --ring: #2563EB;
+  
+  --radius: 0.5rem; /* 8px rounded corners */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased selection:bg-brand-blue/20 selection:text-brand-blue;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans tracking-tight font-bold text-brand-slate;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-sm rounded-lg;
+  }
+  
+  .glass-card-hover {
+    @apply hover:bg-white/90 hover:shadow-md transition-all duration-300;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-brand-blue/80;
+  }
+
+  /* Custom Scrollbar for sleek look */
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+}
