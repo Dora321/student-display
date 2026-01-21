@@ -30,10 +30,10 @@ export function LeaderboardList({ students, period }: LeaderboardListProps) {
         <span className="w-12 text-center">排名</span>
         <span className="flex-1 px-4">学生姓名</span>
         <span className="w-24 text-right">
-           {getLabel()}
+          {getLabel()}
         </span>
       </div>
-      
+
       <div className="flex-1 space-y-2 overflow-y-auto p-4 scrollbar-hide">
         <AnimatePresence mode="popLayout">
           {list.map((stat, index) => (
@@ -46,39 +46,38 @@ export function LeaderboardList({ students, period }: LeaderboardListProps) {
               className="
                 flex items-center justify-between p-3 rounded-lg
                 bg-white border border-gray-100 shadow-sm
-                hover:shadow-md hover:border-brand-blue/30 hover:bg-blue-50/30
+                hover:shadow-md hover:border-brand-teal/30 hover:bg-teal-50/50
                 transition-all duration-200 cursor-default group
               "
             >
               <div className="flex items-center gap-4">
-                <div className="font-mono font-bold text-lg text-muted-foreground w-12 text-center group-hover:text-brand-blue transition-colors">
-                  {stat.rank < 10 ? `0${stat.rank}` : stat.rank}
+                <div className="font-heading font-bold text-lg text-white bg-brand-teal/80 w-8 h-8 rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  {stat.rank}
                 </div>
-                
+
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full border border-gray-100 overflow-hidden bg-gray-50">
-                     <img src={stat.student.avatar} className="w-full h-full object-cover" />
+                  <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-gray-50 group-hover:border-brand-teal transition-colors">
+                    <img src={stat.student.avatar} className="w-full h-full object-cover" />
                   </div>
-                  <span className="font-sans font-bold text-base text-brand-slate group-hover:text-brand-blue transition-colors">
+                  <span className="font-heading font-bold text-lg text-brand-slate group-hover:text-brand-teal transition-colors">
                     {stat.student.name}
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-4">
-                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    {index % 3 === 0 ? (
-                       <TrendingUp className="w-3.5 h-3.5 text-green-500" />
-                    ) : (
-                       <Minus className="w-3.5 h-3.5 text-gray-300" />
-                    )}
-                 </div>
-                 
-                 <div className={`font-mono text-xl font-bold w-24 text-right transition-colors ${
-                    period === 'week' ? 'text-green-600' : period === 'month' ? 'text-purple-600' : 'text-brand-slate'
-                 }`}>
-                    {getPoints(stat)}
-                 </div>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {index % 3 === 0 ? (
+                    <TrendingUp className="w-3.5 h-3.5 text-green-500" />
+                  ) : (
+                    <Minus className="w-3.5 h-3.5 text-gray-300" />
+                  )}
+                </div>
+
+                <div className={`font-mono text-xl font-bold w-24 text-right transition-colors ${period === 'week' ? 'text-green-600' : period === 'month' ? 'text-purple-600' : 'text-brand-slate'
+                  }`}>
+                  {getPoints(stat)}
+                </div>
               </div>
             </motion.div>
           ))}

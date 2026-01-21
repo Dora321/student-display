@@ -101,12 +101,15 @@ export default function Home({ targetSection }: HomeProps) {
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold text-brand-slate">
-                沐新青少年科创中心 <span className="text-brand-blue text-lg font-medium opacity-80">STEM EDU</span>
+              <h1 className="text-3xl font-bold text-brand-slate tracking-tight flex items-center gap-2">
+                沐新青少年科创中心
+                <span className="px-2 py-0.5 rounded-full bg-brand-orange/10 text-brand-orange text-sm border border-brand-orange/20 font-bold">
+                  STEM EDU
+                </span>
               </h1>
               <div className="flex items-center gap-2 text-muted-foreground font-mono text-xs mt-1">
                 <Cpu className="w-3 h-3" />
-                <span>学生成长激励系统 v3.3</span>
+                <span>学生成长激励系统 v4.0 (Gamified)</span>
               </div>
             </div>
           </div>
@@ -114,7 +117,7 @@ export default function Home({ targetSection }: HomeProps) {
           <div className="flex items-center gap-6">
             <Clock />
             <Link href="/admin">
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-brand-blue hover:bg-brand-blue/10 rounded-lg w-10 h-10">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-brand-teal hover:bg-brand-teal/10 rounded-full w-10 h-10 transition-transform hover:rotate-90 duration-500">
                 <Settings className="w-5 h-5" />
               </Button>
             </Link>
@@ -133,24 +136,24 @@ export default function Home({ targetSection }: HomeProps) {
             >
               {/* Progress Bar for Auto Rotation */}
               {isAutoPlay && (
-                <div className="absolute top-0 left-0 w-full h-1 bg-gray-100">
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100/50">
                   <motion.div
-                    className={`h-full transition-colors duration-300 ${period === 'balance' ? 'bg-brand-blue' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
+                    className={`h-full transition-colors duration-300 ${period === 'balance' ? 'bg-brand-teal' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
                       }`}
                     style={{ width: `${progress}%`, transition: 'width 100ms linear' }}
                   />
                 </div>
               )}
               {!isAutoPlay && (
-                <div className={`absolute top-0 left-0 w-full h-1 transition-colors duration-300 ${period === 'balance' ? 'bg-brand-blue' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
+                <div className={`absolute top-0 left-0 w-full h-1.5 transition-colors duration-300 ${period === 'balance' ? 'bg-brand-teal' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
                   }`}></div>
               )}
 
               <div className="flex items-center justify-center gap-2 mb-4">
-                <h2 className="text-xl font-bold text-brand-slate">
+                <h2 className="text-2xl font-bold text-brand-slate">
                   荣誉殿堂
                 </h2>
-                <span className={`text-xs font-mono px-2 py-0.5 rounded-full text-white transition-colors duration-300 ${period === 'balance' ? 'bg-brand-blue' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
+                <span className={`text-xs font-bold px-3 py-1 rounded-full text-white shadow-sm transition-colors duration-300 ${period === 'balance' ? 'bg-brand-teal' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
                   }`}>
                   {getPeriodLabel(period)}
                 </span>
@@ -179,9 +182,9 @@ export default function Home({ targetSection }: HomeProps) {
             layout
             className="col-span-12 lg:col-span-5 glass-card p-0 flex flex-col relative overflow-hidden"
           >
-            <div className="p-6 pb-2 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-brand-slate flex items-center gap-2">
-                <div className={`w-1.5 h-6 rounded-full transition-colors duration-300 ${period === 'balance' ? 'bg-brand-blue' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
+            <div className="p-6 pb-2 border-b border-gray-100/50 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-brand-slate flex items-center gap-3">
+                <div className={`w-2 h-8 rounded-full transition-colors duration-300 ${period === 'balance' ? 'bg-brand-teal' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
                   }`}></div>
                 龙虎榜
               </h2>
@@ -191,7 +194,7 @@ export default function Home({ targetSection }: HomeProps) {
                 <div className="flex bg-gray-100 p-1 rounded-lg">
                   <button
                     onClick={() => handleManualChange('balance')}
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${period === 'balance' ? 'bg-white shadow-sm text-brand-blue' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${period === 'balance' ? 'bg-white shadow-sm text-brand-teal ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700'}`}
                   >
                     持有
                   </button>
@@ -216,7 +219,7 @@ export default function Home({ targetSection }: HomeProps) {
                   onClick={() => setIsAutoPlay(!isAutoPlay)}
                   title={isAutoPlay ? "Pause Rotation" : "Auto Rotate"}
                 >
-                  {isAutoPlay ? <Pause className="w-4 h-4 text-brand-blue" /> : <Play className="w-4 h-4 text-muted-foreground" />}
+                  {isAutoPlay ? <Pause className="w-4 h-4 text-brand-teal" /> : <Play className="w-4 h-4 text-muted-foreground" />}
                 </Button>
               </div>
             </div>

@@ -1,13 +1,19 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
 
 @theme inline {
   --font-mono: "Fira Code", monospace;
   --font-sans: "Noto Sans SC", sans-serif;
+  --font-heading: "Baloo 2", cursive;
 
-  --color-brand-blue: #2563EB;
+  --color-brand-teal: #0D9488;
+  --color-brand-cyan: #2DD4BF;
   --color-brand-orange: #F97316;
-  --color-brand-slate: #1E293B;
+  --color-brand-slate: #134E4A; /* Dark Teal for text */
+
+  /* Map legacy names to new palette for compatibility */
+  --color-brand-blue: #0D9488; 
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -30,30 +36,30 @@
 }
 
 :root {
-  /* Future Friendly / STEM Theme (Light Mode) */
-  --background: #F8FAFC; /* Slate-50 */
-  --foreground: #1E293B; /* Slate-800 */
+  /* Organic Biophilic / Student Growth Theme */
+  --background: #F0FDFA; /* Teal-50 - Warm/Fresh Background */
+  --foreground: #134E4A; /* Teal-900 - Dark Organic Text */
 
-  --card: rgba(255, 255, 255, 0.7);
-  --card-foreground: #1E293B;
+  --card: rgba(255, 255, 255, 0.85); /* Slightly more opaque for readability */
+  --card-foreground: #134E4A;
 
-  --primary: #2563EB; /* Royal Blue */
+  --primary: #0D9488; /* Teal-600 - Main Growth Color */
   --primary-foreground: #FFFFFF;
 
-  --secondary: #E2E8F0; /* Slate-200 */
-  --secondary-foreground: #1E293B;
+  --secondary: #CCFBF1; /* Teal-100 - Soft Secondary */
+  --secondary-foreground: #0F766E;
 
-  --accent: #F97316; /* Vibrant Orange */
+  --accent: #F97316; /* Orange-500 - Energy/Action */
   --accent-foreground: #FFFFFF;
 
-  --muted: #F1F5F9; /* Slate-100 */
-  --muted-foreground: #64748B; /* Slate-500 */
+  --muted: #F0FDF4; /* Green-50 - Fresh Muted */
+  --muted-foreground: #475569; /* Slate-600 */
 
-  --border: #E2E8F0; /* Slate-200 */
-  --input: #E2E8F0;
-  --ring: #2563EB;
+  --border: #99F6E4; /* Teal-200 */
+  --input: #CCFBF1;
+  --ring: #0D9488;
   
-  --radius: 0.5rem; /* 8px rounded corners */
+  --radius: 1rem; /* 16px - More organic/friendly rounded corners */
 }
 
 @layer base {
@@ -61,25 +67,28 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-brand-blue/20 selection:text-brand-blue;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-brand-teal/20 selection:text-brand-teal;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-sans tracking-tight font-bold text-brand-slate;
+    /* Apply Baloo 2 font to headings */
+    font-family: "Baloo 2", cursive;
+    @apply tracking-wide font-bold text-brand-slate;
   }
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-sm rounded-lg;
+    /* Softer, more organic glass effect */
+    @apply bg-white/60 backdrop-blur-lg border border-white/60 shadow-lg shadow-teal-900/5 rounded-2xl;
   }
   
   .glass-card-hover {
-    @apply hover:bg-white/90 hover:shadow-md transition-all duration-300;
+    @apply hover:bg-white/80 hover:shadow-xl hover:shadow-teal-900/10 transition-all duration-300 hover:-translate-y-1;
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-blue to-brand-blue/80;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-teal to-brand-cyan;
   }
 
   /* Custom Scrollbar for sleek look */

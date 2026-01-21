@@ -26,55 +26,55 @@ export function TopPodium({ top3, period }: TopPodiumProps) {
 
   const renderCard = (student: StudentStats | undefined, rank: number) => {
     if (!student) return null;
-    
+
     const isFirst = rank === 1;
     const height = isFirst ? 'h-[20rem]' : rank === 2 ? 'h-[17rem]' : 'h-[15rem]';
     const points = getPoints(student);
-    
+
     // Period-based color overrides
     const highlightColor = period === 'week' ? 'text-green-600' : period === 'month' ? 'text-purple-600' : '';
-    
-    // Future Friendly Colors
-    const config = isFirst 
-      ? { 
-          bg: 'bg-gradient-to-b from-yellow-50 to-white', 
-          border: 'border-yellow-200',
-          badge: 'bg-yellow-400 text-yellow-950',
+
+    // Gamified / Nature Colors
+    const config = isFirst
+      ? {
+        bg: 'bg-gradient-to-b from-amber-50 to-white',
+        border: 'border-amber-200',
+        badge: 'bg-amber-400 text-amber-950',
+        text: 'text-brand-slate',
+        highlight: highlightColor || 'text-amber-600'
+      }
+      : rank === 2
+        ? {
+          bg: 'bg-gradient-to-b from-slate-50 to-white',
+          border: 'border-slate-200',
+          badge: 'bg-slate-200 text-slate-700',
           text: 'text-brand-slate',
-          highlight: highlightColor || 'text-yellow-600'
+          highlight: highlightColor || 'text-slate-500'
         }
-      : rank === 2 
-        ? { 
-            bg: 'bg-gradient-to-b from-gray-50 to-white', 
-            border: 'border-gray-200',
-            badge: 'bg-gray-200 text-gray-700',
-            text: 'text-brand-slate',
-            highlight: highlightColor || 'text-gray-500'
-          }
-        : { 
-            bg: 'bg-gradient-to-b from-orange-50 to-white', 
-            border: 'border-orange-200',
-            badge: 'bg-orange-200 text-orange-800',
-            text: 'text-brand-slate',
-            highlight: highlightColor || 'text-orange-600'
-          };
-    
+        : {
+          bg: 'bg-gradient-to-b from-orange-50 to-white',
+          border: 'border-orange-200',
+          badge: 'bg-orange-200 text-orange-800',
+          text: 'text-brand-slate',
+          highlight: highlightColor || 'text-orange-600'
+        };
+
     return (
       <div className={`flex flex-col items-center justify-end ${isFirst ? '-mt-12 z-20' : 'z-10'}`}>
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: rank * 0.1 }}
           className="relative flex flex-col items-center group"
         >
           {isFirst && (
-             <img 
-               src={trophyImg} 
-               alt="Trophy" 
-               className="w-28 h-28 absolute -top-24 left-1/2 -translate-x-1/2 z-30 drop-shadow-lg"
-             />
+            <img
+              src={trophyImg}
+              alt="Trophy"
+              className="w-28 h-28 absolute -top-24 left-1/2 -translate-x-1/2 z-30 drop-shadow-lg"
+            />
           )}
-          
+
           <div className="mb-4 relative z-20">
             {/* Rank Badge */}
             <div className={`
@@ -103,21 +103,21 @@ export function TopPodium({ top3, period }: TopPodiumProps) {
             flex flex-col items-center pt-8
             shadow-sm relative overflow-hidden
           `}>
-             <h3 className="text-lg font-bold font-sans text-center w-full px-2 text-brand-slate truncate">
-               {student.student.name}
-             </h3>
-             
-             <div className="mt-auto mb-6 flex flex-col items-center">
-                <span className={`text-3xl font-bold font-mono ${config.highlight}`}>
-                  {points}
-                </span>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
-                   {getLabel()}
-                </span>
-             </div>
-             
-             {/* Bottom Decoration */}
-             <div className="absolute bottom-0 w-full h-1 bg-gray-100"></div>
+            <h3 className="text-lg font-bold font-heading text-center w-full px-2 text-brand-slate truncate">
+              {student.student.name}
+            </h3>
+
+            <div className="mt-auto mb-6 flex flex-col items-center">
+              <span className={`text-3xl font-bold font-mono ${config.highlight}`}>
+                {points}
+              </span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">
+                {getLabel()}
+              </span>
+            </div>
+
+            {/* Bottom Decoration */}
+            <div className="absolute bottom-0 w-full h-1 bg-gray-100"></div>
           </div>
         </motion.div>
       </div>
