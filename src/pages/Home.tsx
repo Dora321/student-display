@@ -184,7 +184,7 @@ export default function Home({ targetSection }: HomeProps) {
               transition={{ delay: 0.2 }}
               className="flex-1 min-h-0 flex flex-col"
             >
-              <ClassRanks />
+              <ClassRanks period={period} />
             </motion.div>
 
             {/* Stats Card */}
