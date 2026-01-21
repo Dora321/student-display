@@ -11,6 +11,7 @@ import { Settings, Cpu, Play, Pause, Activity, Trophy } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChannelsVideo } from '@/components/dashboard/ChannelsVideo';
+import { ClassRanks } from '@/components/dashboard/ClassRanks';
 
 interface HomeProps {
   targetSection?: string;
@@ -138,7 +139,7 @@ export default function Home({ targetSection }: HomeProps) {
             {/* Podium Card */}
             <motion.div
               layout
-              className="flex-[2] glass-card p-6 relative overflow-hidden flex flex-col"
+              className="flex-[1.6] glass-card p-6 relative overflow-hidden flex flex-col min-h-0"
             >
               {/* Progress Bar for Auto Rotation */}
               {isAutoPlay && (
@@ -176,12 +177,22 @@ export default function Home({ targetSection }: HomeProps) {
               </div>
             </motion.div>
 
+            {/* Class Ranks */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="flex-1 min-h-0 flex flex-col"
+            >
+              <ClassRanks />
+            </motion.div>
+
             {/* Stats Card */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="h-48"
+              transition={{ delay: 0.3 }}
+              className="h-36 shrink-0"
             >
               <StatsCard />
             </motion.div>
