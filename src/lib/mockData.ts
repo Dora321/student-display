@@ -1,4 +1,4 @@
-import type { Student, ClassGroup, PointRecord, AttendanceRecord, Teacher } from '../types';
+import type { Student, ClassGroup, PointRecord, Teacher } from '../types';
 import { nanoid } from 'nanoid';
 
 // Generators
@@ -41,31 +41,5 @@ mockStudents.forEach(student => {
       timestamp: Date.now() - Math.floor(Math.random() * 90 * 24 * 60 * 60 * 1000), // Last 90 days
       type: TYPES[Math.floor(Math.random() * TYPES.length)]
     });
-  }
-});
-
-// Generate Attendance (Last 30 days)
-export const mockAttendance: AttendanceRecord[] = [];
-mockStudents.forEach(student => {
-  for (let i = 0; i < 30; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
-    
-    // 90% chance present
-    const rand = Math.random();
-    let status: 'present' | 'absent' | 'late' = 'present';
-    if (rand > 0.95) status = 'absent';
-    else if (rand > 0.9) status = 'late';
-    
-    // Weekends no class (simplified)
-    if (date.getDay() !== 0 && date.getDay() !== 6) {
-       mockAttendance.push({
-        id: nanoid(),
-        studentId: student.id,
-        date: dateStr,
-        status
-      });
-    }
   }
 });

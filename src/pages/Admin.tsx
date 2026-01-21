@@ -4,7 +4,7 @@ import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { PointsForm } from '@/components/admin/PointsForm';
-import { AttendanceTable } from '@/components/admin/AttendanceTable';
+
 import { SettingsTab } from '@/components/admin/SettingsTab';
 import { ClassManagement } from '@/components/admin/ClassManagement';
 import { PointsHistory } from '@/components/admin/PointsHistory';
@@ -47,32 +47,27 @@ export default function AdminDashboard() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <div className="flex justify-center">
             <TabsList className="bg-white border border-slate-200 shadow-sm p-1 rounded-xl h-auto">
-              <TabsTrigger 
-                value="points" 
+              <TabsTrigger
+                value="points"
                 className="px-6 py-2.5 rounded-lg data-[state=active]:bg-brand-blue data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-medium text-slate-600"
               >
                 <Award className="w-4 h-4 mr-2" /> 积分管理
               </TabsTrigger>
-              <TabsTrigger 
-                value="attendance" 
-                className="px-6 py-2.5 rounded-lg data-[state=active]:bg-purple-600 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-medium text-slate-600"
-              >
-                <Users className="w-4 h-4 mr-2" /> 考勤签到
-              </TabsTrigger>
-              <TabsTrigger 
-                value="classes" 
+
+              <TabsTrigger
+                value="classes"
                 className="px-6 py-2.5 rounded-lg data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-medium text-slate-600"
               >
                 <GraduationCap className="w-4 h-4 mr-2" /> 班级管理
               </TabsTrigger>
-              <TabsTrigger 
-                value="history" 
+              <TabsTrigger
+                value="history"
                 className="px-6 py-2.5 rounded-lg data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-medium text-slate-600"
               >
                 <History className="w-4 h-4 mr-2" /> 历史记录
               </TabsTrigger>
-              <TabsTrigger 
-                value="settings" 
+              <TabsTrigger
+                value="settings"
                 className="px-6 py-2.5 rounded-lg data-[state=active]:bg-slate-800 data-[state=active]:text-white data-[state=active]:shadow-md transition-all font-medium text-slate-600"
               >
                 <Settings className="w-4 h-4 mr-2" /> 系统设置
@@ -82,39 +77,33 @@ export default function AdminDashboard() {
 
           <div className="max-w-5xl mx-auto">
             <TabsContent value="points" className="mt-0 focus-visible:outline-none">
-               <div className="text-center mb-8">
-                 <h2 className="text-3xl font-bold text-slate-800 mb-2">学生积分激励</h2>
-                 <p className="text-slate-500">奖励学生的成就、表现和参与度。</p>
-               </div>
-               <PointsForm />
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-slate-800 mb-2">学生积分激励</h2>
+                <p className="text-slate-500">奖励学生的成就、表现和参与度。</p>
+              </div>
+              <PointsForm />
             </TabsContent>
 
-            <TabsContent value="attendance" className="mt-0 focus-visible:outline-none">
-               <div className="text-center mb-8">
-                 <h2 className="text-3xl font-bold text-slate-800 mb-2">每日考勤</h2>
-                 <p className="text-slate-500">记录学生今日的出勤情况。</p>
-               </div>
-               <AttendanceTable />
-            </TabsContent>
+
 
             <TabsContent value="classes" className="mt-0 focus-visible:outline-none">
-               <div className="text-center mb-8">
-                 <h2 className="text-3xl font-bold text-slate-800 mb-2">班级与学生管理</h2>
-                 <p className="text-slate-500">管理班级名单和注册新学生。</p>
-               </div>
-               <ClassManagement />
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-slate-800 mb-2">班级与学生管理</h2>
+                <p className="text-slate-500">管理班级名单和注册新学生。</p>
+              </div>
+              <ClassManagement />
             </TabsContent>
 
             <TabsContent value="history" className="mt-0 focus-visible:outline-none">
-               <div className="text-center mb-8">
-                 <h2 className="text-3xl font-bold text-slate-800 mb-2">积分审计日志</h2>
-                 <p className="text-slate-500">查看和筛选历史积分变动与兑换记录。</p>
-               </div>
-               <PointsHistory />
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-slate-800 mb-2">积分审计日志</h2>
+                <p className="text-slate-500">查看和筛选历史积分变动与兑换记录。</p>
+              </div>
+              <PointsHistory />
             </TabsContent>
 
             <TabsContent value="settings" className="mt-0 focus-visible:outline-none">
-               <SettingsTab />
+              <SettingsTab />
             </TabsContent>
           </div>
         </Tabs>

@@ -19,13 +19,6 @@ export interface PointRecord {
   type: 'achievement' | 'behavior' | 'participation' | 'redemption';
 }
 
-export interface AttendanceRecord {
-  id: string;
-  studentId: string;
-  date: string; // YYYY-MM-DD
-  status: 'present' | 'absent' | 'late';
-}
-
 export interface Teacher {
   id: string;
   name: string;
@@ -35,9 +28,8 @@ export interface Teacher {
 // Derived stats for display
 export interface StudentStats {
   student: Student;
-  currentBalance: number; // New: Points available to spend
+  currentBalance: number; // Points available to spend
   weeklyPoints: number; // Performance metric (ignore redemptions)
   monthlyPoints: number; // Performance metric (ignore redemptions)
-  attendanceRate: number; // 0-100
   rank: number;
 }
