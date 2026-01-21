@@ -7,9 +7,8 @@ import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
-import { Settings, Cpu, Play, Pause } from 'lucide-react';
+import { Settings, Cpu, Play, Pause, Activity, Trophy } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
-import bgImg from '@/assets/stem_bg.jpg';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChannelsVideo } from '@/components/dashboard/ChannelsVideo';
 
@@ -80,44 +79,51 @@ export default function Home({ targetSection }: HomeProps) {
 
   return (
     <div
-      className="min-h-screen text-foreground overflow-hidden relative font-sans flex flex-col"
-      style={{
-        backgroundImage: `url(${bgImg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
+      className="min-h-screen text-foreground overflow-hidden relative font-sans flex flex-col bg-background selection:bg-brand-blue/30"
     >
-      {/* Light Overlay for readability */}
-      <div className="absolute inset-0 bg-white/60 z-0" />
+      {/* Futuristic Grid Background */}
+      <div className="absolute inset-0 bg-grid-pattern z-0 opacity-[0.6] pointer-events-none" />
+
+      {/* Ambient Glows */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-orange-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Main Container */}
       <div className="relative z-10 flex-1 flex flex-col p-4 md:p-6 gap-6 h-screen max-h-screen overflow-hidden">
 
         {/* Header Section */}
-        <header className="flex items-center justify-between glass-card px-6 py-4 shrink-0">
+        <header className="flex items-center justify-between glass-card px-6 py-4 shrink-0 border-l-4 border-l-brand-blue">
           <div className="flex items-center gap-4">
-            <div className="p-2 bg-brand-blue/10 rounded-lg">
+            <div className="p-2.5 bg-white shadow-sm border border-slate-100 rounded-xl">
               <img src={logoImg} className="h-10 w-10 object-contain" alt="Logo" />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-brand-slate tracking-tight flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-3">
                 沐新青少年科创中心
-                <span className="px-2 py-0.5 rounded-full bg-brand-orange/10 text-brand-orange text-sm border border-brand-orange/20 font-bold">
-                  STEM EDU
+                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-mono tracking-wider bg-brand-orange text-white font-bold shadow-sm shadow-orange-200">
+                  STEM DASHBOARD
                 </span>
               </h1>
-              <div className="flex items-center gap-2 text-muted-foreground font-mono text-xs mt-1">
-                <Cpu className="w-3 h-3" />
-                <span>学生成长激励系统 v4.0 (Gamified)</span>
+              <div className="flex items-center gap-4 text-slate-500 font-mono text-[10px] uppercase tracking-wider mt-1">
+                <div className="flex items-center gap-1.5">
+                  <Cpu className="w-3 h-3" />
+                  <span>System v4.0</span>
+                </div>
+                <div className="w-1 h-1 bg-slate-300 rounded-full" />
+                <div className="flex items-center gap-1.5 text-green-600">
+                  <Activity className="w-3 h-3" />
+                  <span>Live Data</span>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-6">
             <Clock />
+            <div className="h-8 w-px bg-slate-200" />
             <Link href="/admin">
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-brand-teal hover:bg-brand-teal/10 rounded-full w-10 h-10 transition-transform hover:rotate-90 duration-500">
+              <Button variant="ghost" size="icon" className="text-slate-400 hover:text-brand-blue hover:bg-blue-50 rounded-xl w-10 h-10 transition-all duration-300">
                 <Settings className="w-5 h-5" />
               </Button>
             </Link>
@@ -149,11 +155,15 @@ export default function Home({ targetSection }: HomeProps) {
                   }`}></div>
               )}
 
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <h2 className="text-2xl font-bold text-brand-slate">
-                  荣誉殿堂
-                </h2>
-                <span className={`text-xs font-bold px-3 py-1 rounded-full text-white shadow-sm transition-colors duration-300 ${period === 'balance' ? 'bg-brand-teal' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-yellow-400/10 rounded-lg text-yellow-600">
+                    <Trophy className="w-5 h-5" />
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-800">荣誉殿堂</h2>
+                </div>
+
+                <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-1 rounded-full text-white shadow-sm transition-colors duration-300 ${period === 'balance' ? 'bg-brand-blue' : period === 'month' ? 'bg-purple-500' : 'bg-green-500'
                   }`}>
                   {getPeriodLabel(period)}
                 </span>

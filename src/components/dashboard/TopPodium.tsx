@@ -34,28 +34,28 @@ export function TopPodium({ top3, period }: TopPodiumProps) {
     // Period-based color overrides
     const highlightColor = period === 'week' ? 'text-green-600' : period === 'month' ? 'text-purple-600' : '';
 
-    // Gamified / Nature Colors
+    // Tech / Metallic Colors (Gold / Silver / Bronze)
     const config = isFirst
       ? {
-        bg: 'bg-gradient-to-b from-amber-50 to-white',
-        border: 'border-amber-200',
-        badge: 'bg-amber-400 text-amber-950',
-        text: 'text-brand-slate',
-        highlight: highlightColor || 'text-amber-600'
+        bg: 'bg-gradient-to-b from-yellow-100/50 to-white/90',
+        border: 'border-yellow-300/50',
+        badge: 'bg-yellow-400 text-yellow-900 shadow-yellow-200',
+        text: 'text-slate-800',
+        highlight: highlightColor || 'text-yellow-600'
       }
       : rank === 2
         ? {
-          bg: 'bg-gradient-to-b from-slate-50 to-white',
-          border: 'border-slate-200',
-          badge: 'bg-slate-200 text-slate-700',
-          text: 'text-brand-slate',
+          bg: 'bg-gradient-to-b from-slate-100/50 to-white/90',
+          border: 'border-slate-300/50',
+          badge: 'bg-slate-200 text-slate-700 shadow-slate-200',
+          text: 'text-slate-800',
           highlight: highlightColor || 'text-slate-500'
         }
         : {
-          bg: 'bg-gradient-to-b from-orange-50 to-white',
-          border: 'border-orange-200',
-          badge: 'bg-orange-200 text-orange-800',
-          text: 'text-brand-slate',
+          bg: 'bg-gradient-to-b from-orange-100/50 to-white/90',
+          border: 'border-orange-300/50',
+          badge: 'bg-orange-300 text-orange-900 shadow-orange-200',
+          text: 'text-slate-800',
           highlight: highlightColor || 'text-orange-600'
         };
 
@@ -98,10 +98,10 @@ export function TopPodium({ top3, period }: TopPodiumProps) {
 
           {/* Podium Base */}
           <div className={`
-            w-36 ${height} ${config.bg}
+            w-36 ${height} ${config.bg} backdrop-blur-sm
             border border-b-0 ${config.border} rounded-t-xl
             flex flex-col items-center pt-8
-            shadow-sm relative overflow-hidden
+            shadow-lg relative overflow-hidden
           `}>
             <h3 className="text-lg font-bold font-heading text-center w-full px-2 text-brand-slate truncate">
               {student.student.name}

@@ -44,22 +44,22 @@ export function LeaderboardList({ students, period }: LeaderboardListProps) {
               exit={{ opacity: 0, x: 10 }}
               transition={{ delay: 0.05 * index }}
               className="
-                flex items-center justify-between p-3 rounded-lg
-                bg-white border border-gray-100 shadow-sm
-                hover:shadow-md hover:border-brand-teal/30 hover:bg-teal-50/50
-                transition-all duration-200 cursor-default group
+                flex items-center justify-between p-3 rounded-xl
+                bg-white/80 border border-slate-100 shadow-sm
+                hover:shadow-md hover:border-brand-blue/30 hover:bg-blue-50/80
+                transition-all duration-200 cursor-default group backdrop-blur-sm
               "
             >
               <div className="flex items-center gap-4">
-                <div className="font-heading font-bold text-lg text-white bg-brand-teal/80 w-8 h-8 rounded-full flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <div className="font-mono font-bold text-sm text-blue-600 bg-blue-100/50 border border-blue-200 w-8 h-8 rounded-lg flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                   {stat.rank}
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-gray-50 group-hover:border-brand-teal transition-colors">
+                  <div className="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-slate-100 group-hover:border-brand-blue transition-colors">
                     <img src={stat.student.avatar} className="w-full h-full object-cover" />
                   </div>
-                  <span className="font-heading font-bold text-lg text-brand-slate group-hover:text-brand-teal transition-colors">
+                  <span className="font-sans font-bold text-base text-slate-700 group-hover:text-brand-blue transition-colors">
                     {stat.student.name}
                   </span>
                 </div>
@@ -74,7 +74,7 @@ export function LeaderboardList({ students, period }: LeaderboardListProps) {
                   )}
                 </div>
 
-                <div className={`font-mono text-xl font-bold w-24 text-right transition-colors ${period === 'week' ? 'text-green-600' : period === 'month' ? 'text-purple-600' : 'text-brand-slate'
+                <div className={`font-mono text-xl font-bold w-24 text-right transition-colors ${period === 'week' ? 'text-green-600' : period === 'month' ? 'text-purple-600' : 'text-brand-blue'
                   }`}>
                   {getPoints(stat)}
                 </div>
