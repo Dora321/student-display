@@ -21,6 +21,7 @@ interface DataContextType {
   addPoint: (studentId: string, amount: number, reason: string, type: PointRecord['type']) => Promise<void>;
   redeemPoints: (studentId: string, amount: number, item: string) => Promise<void>;
   resetPoints: (studentId: string) => Promise<void>;
+  importData: (data: any) => Promise<boolean>;
 
   addClass: (name: string) => Promise<void>;
   addStudent: (name: string, classId: string, avatar?: string) => Promise<void>;
@@ -179,6 +180,33 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     toast.success('积分已清零');
   };
 
+  const importData = async (data: any): Promise<boolean> => {
+    try {
+      if (!Array.isArray(data.students) || !Array.isArray(data.classes) || !Array.isArray(data.points)) {
+        throw new Error('Invalid data format');
+      }
+
+      setStudents(data.students);
+      setClasses(data.classes);
+      setPoints(data.points);
+
+      // If online, we might want to sync, but for now let's just update local state
+      // and let the user decide if they want to push this to cloud (by re-connecting or logic below)
+      if (isOnline && supabase) {
+        toast.loading('Syncing imported data to cloud...');
+        // Danger zone: this is a full overwrite usually, but Supabase simple insert might conflict.
+        // For a simple app, we might just warn this is local only unless they clear cloud first.
+        // Let's stick to local state update first, usually import is for recovery.
+        toast.dismiss();
+        toast.warning('Imported data is local. Cloud sync might need a refresh.');
+      }
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
+
 
   const addClass = async (name: string) => {
     const newClass: ClassGroup = { id: nanoid(), name };
@@ -289,7 +317,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   return (
     <DataContext.Provider value={{
       students, classes, points, teachers, currentUser, isOnline,
-      login, logout, addPoint, redeemPoints, resetPoints, addClass, addStudent, deleteClass, deleteStudent, getStudentStats, getAllStudentStats, refreshData: loadRemoteData
+      login, logout, addPoint, redeemPoints, resetPoints, importData, addClass, addStudent, deleteClass, deleteStudent, getStudentStats, getAllStudentStats, refreshData: loadRemoteData
     }}>
       {children}
     </DataContext.Provider>
