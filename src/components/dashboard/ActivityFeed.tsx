@@ -1,6 +1,6 @@
 import { useData } from '@/contexts/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Star, Trophy, Target } from 'lucide-react';
+import { Zap, Star, Trophy, Target, RefreshCcw } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function ActivityFeed() {
@@ -12,6 +12,7 @@ export function ActivityFeed() {
       case 'achievement': return <Trophy className="w-3.5 h-3.5 text-yellow-500" />;
       case 'behavior': return <Star className="w-3.5 h-3.5 text-purple-500" />;
       case 'challenge': return <Target className="w-3.5 h-3.5 text-red-500" />;
+      case 'adjustment': return <RefreshCcw className="w-3.5 h-3.5 text-slate-500" />;
       default: return <Zap className="w-3.5 h-3.5 text-brand-blue" />;
     }
   };

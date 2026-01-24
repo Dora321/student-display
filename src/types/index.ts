@@ -16,7 +16,7 @@ export interface PointRecord {
   amount: number;
   reason: string;
   timestamp: number;
-  type: 'achievement' | 'behavior' | 'participation' | 'redemption';
+  type: 'achievement' | 'behavior' | 'participation' | 'redemption' | 'adjustment';
 }
 
 export interface Teacher {

@@ -27,13 +27,13 @@ export function PointsHistory() {
 
     // 2. Filter by Date
     if (startDate) {
-      const recordDate = new Date(record.timestamp).setHours(0,0,0,0);
-      const start = new Date(startDate).setHours(0,0,0,0);
+      const recordDate = new Date(record.timestamp).setHours(0, 0, 0, 0);
+      const start = new Date(startDate).setHours(0, 0, 0, 0);
       if (recordDate < start) return false;
     }
     if (endDate) {
-      const recordDate = new Date(record.timestamp).setHours(0,0,0,0);
-      const end = new Date(endDate).setHours(0,0,0,0);
+      const recordDate = new Date(record.timestamp).setHours(0, 0, 0, 0);
+      const end = new Date(endDate).setHours(0, 0, 0, 0);
       if (recordDate > end) return false;
     }
 
@@ -41,16 +41,17 @@ export function PointsHistory() {
   });
 
   // Map students for dropdown
-  const availableStudents = selectedClassId === 'all' 
-    ? students 
+  const availableStudents = selectedClassId === 'all'
+    ? students
     : students.filter(s => s.classId === selectedClassId);
 
   const getTypeLabel = (type: string) => {
-    switch(type) {
+    switch (type) {
       case 'achievement': return '成就';
       case 'behavior': return '表现';
       case 'participation': return '参与';
       case 'redemption': return '兑换';
+      case 'adjustment': return '调整/清零';
       default: return type;
     }
   };
@@ -75,7 +76,7 @@ export function PointsHistory() {
             <X className="w-4 h-4 mr-1" /> 清空筛选
           </Button>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="space-y-2">
             <Label>班级</Label>
@@ -109,21 +110,21 @@ export function PointsHistory() {
 
           <div className="space-y-2">
             <Label>开始日期</Label>
-            <Input 
-              type="date" 
-              value={startDate} 
-              onChange={e => setStartDate(e.target.value)} 
-              className="bg-slate-50 border-slate-200 block" 
+            <Input
+              type="date"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+              className="bg-slate-50 border-slate-200 block"
             />
           </div>
 
           <div className="space-y-2">
             <Label>结束日期</Label>
-            <Input 
-              type="date" 
-              value={endDate} 
-              onChange={e => setEndDate(e.target.value)} 
-              className="bg-slate-50 border-slate-200 block" 
+            <Input
+              type="date"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              className="bg-slate-50 border-slate-200 block"
             />
           </div>
         </div>
@@ -137,7 +138,7 @@ export function PointsHistory() {
             {filteredRecords.length} 条记录
           </span>
         </div>
-        
+
         <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
           <Table>
             <TableHeader className="bg-slate-50 sticky top-0 z-10 shadow-sm">
@@ -156,7 +157,7 @@ export function PointsHistory() {
                   const student = students.find(s => s.id === record.studentId);
                   const cls = classes.find(c => c.id === student?.classId);
                   const isPositive = record.amount > 0;
-                  
+
                   return (
                     <TableRow key={record.id} className="hover:bg-slate-50/80 transition-colors">
                       <TableCell className="font-mono text-xs text-slate-500">
@@ -169,9 +170,8 @@ export function PointsHistory() {
                         {cls?.name || '-'}
                       </TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                          record.type === 'redemption' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-brand-blue'
-                        }`}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${record.type === 'redemption' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-brand-blue'
+                          }`}>
                           {getTypeLabel(record.type)}
                         </span>
                       </TableCell>

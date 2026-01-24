@@ -20,6 +20,7 @@ interface DataContextType {
   logout: () => void;
   addPoint: (studentId: string, amount: number, reason: string, type: PointRecord['type']) => Promise<void>;
   redeemPoints: (studentId: string, amount: number, item: string) => Promise<void>;
+  resetPoints: (studentId: string) => Promise<void>;
 
   addClass: (name: string) => Promise<void>;
   addStudent: (name: string, classId: string, avatar?: string) => Promise<void>;
@@ -169,6 +170,15 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     await addPoint(studentId, cost, `Redeemed: ${item}`, 'redemption');
   };
 
+  const resetPoints = async (studentId: string) => {
+    const stats = getStudentStats(studentId);
+    if (stats.currentBalance === 0) return;
+
+    const adjustment = stats.currentBalance * -1;
+    await addPoint(studentId, adjustment, '一键清零 (Balance Reset)', 'adjustment');
+    toast.success('积分已清零');
+  };
+
 
   const addClass = async (name: string) => {
     const newClass: ClassGroup = { id: nanoid(), name };
@@ -279,7 +289,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   return (
     <DataContext.Provider value={{
       students, classes, points, teachers, currentUser, isOnline,
-      login, logout, addPoint, redeemPoints, addClass, addStudent, deleteClass, deleteStudent, getStudentStats, getAllStudentStats, refreshData: loadRemoteData
+      login, logout, addPoint, redeemPoints, resetPoints, addClass, addStudent, deleteClass, deleteStudent, getStudentStats, getAllStudentStats, refreshData: loadRemoteData
     }}>
       {children}
     </DataContext.Provider>
