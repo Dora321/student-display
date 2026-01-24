@@ -24,7 +24,9 @@ interface DataContextType {
   importData: (data: any) => Promise<boolean>;
 
   addClass: (name: string) => Promise<void>;
+  updateClass: (id: string, name: string) => Promise<void>;
   addStudent: (name: string, classId: string, avatar?: string) => Promise<void>;
+  updateStudent: (id: string, updates: Partial<Student>) => Promise<void>;
   deleteClass: (id: string) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
   getStudentStats: (studentId: string) => StudentStats;
@@ -225,6 +227,22 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateClass = async (id: string, name: string) => {
+    if (isOnline && supabase) {
+      setClasses(prev => prev.map(c => c.id === id ? { ...c, name } : c));
+      const { error } = await supabase.from('classes').update({ name }).eq('id', id);
+      if (error) {
+        toast.error('Failed to update class');
+        loadRemoteData();
+      } else {
+        toast.success('Class updated!');
+      }
+    } else {
+      setClasses(prev => prev.map(c => c.id === id ? { ...c, name } : c));
+      toast.success('Class updated locally');
+    }
+  };
+
   const addStudent = async (name: string, classId: string, avatar?: string) => {
     const newStudent: Student = {
       id: nanoid(),
@@ -244,6 +262,24 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     } else {
       setStudents(prev => [...prev, newStudent]);
       toast.success('Student added locally');
+    }
+  };
+
+  const updateStudent = async (id: string, updates: Partial<Student>) => {
+    if (isOnline && supabase) {
+      setStudents(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+      // Rename 'classId' to 'classId' (no change needed if column matches)
+      // But ensure we only send valid columns. For now assumpt Partil<Student> maps 1:1
+      const { error } = await supabase.from('students').update(updates).eq('id', id);
+      if (error) {
+        toast.error('Failed to update student');
+        loadRemoteData();
+      } else {
+        toast.success('Student updated!');
+      }
+    } else {
+      setStudents(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+      toast.success('Student updated locally');
     }
   };
 
@@ -343,7 +379,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   return (
     <DataContext.Provider value={{
       students, classes, points, teachers, currentUser, isOnline,
-      login, logout, addPoint, redeemPoints, resetPoints, importData, addClass, addStudent, deleteClass, deleteStudent, getStudentStats, getAllStudentStats, refreshData: loadRemoteData
+      login, logout, addPoint, redeemPoints, resetPoints, importData, addClass, updateClass, addStudent, updateStudent, deleteClass, deleteStudent, getStudentStats, getAllStudentStats, refreshData: loadRemoteData
     }}>
       {children}
     </DataContext.Provider>

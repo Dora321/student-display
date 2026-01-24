@@ -17,7 +17,7 @@ create table public.students (
 create table public.points (
   id text primary key,
   "studentId" text not null references public.students(id),
-  amount integer not null,
+  amount numeric not null,
   reason text,
   timestamp bigint not null,
   type text not null
