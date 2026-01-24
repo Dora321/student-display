@@ -264,16 +264,29 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteStudent = async (id: string) => {
+    // 1. Delete points first to satisfy FK constraints and clean up
     if (isOnline && supabase) {
+      // Optimistic update
       setStudents(prev => prev.filter(s => s.id !== id));
+      setPoints(prev => prev.filter(p => p.studentId !== id));
+
+      const { error: pointsError } = await supabase.from('points').delete().eq('studentId', id);
+      if (pointsError) {
+        console.error('Failed to delete student points', pointsError);
+        // We continue to try deleting student, or maybe revert?
+        // If points delete fails, student delete will likely fail too if FK exists.
+      }
+
       const { error } = await supabase.from('students').delete().eq('id', id);
       if (error) {
         toast.error('Failed to delete student');
-        loadRemoteData();
+        console.error(error);
+        loadRemoteData(); // Reload to restore state if failed
       } else {
         toast.success('Student deleted!');
       }
     } else {
+      setPoints(prev => prev.filter(p => p.studentId !== id));
       setStudents(prev => prev.filter(s => s.id !== id));
       toast.success('Student deleted locally');
     }
