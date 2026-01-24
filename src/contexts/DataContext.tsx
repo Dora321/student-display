@@ -270,20 +270,33 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       setStudents(prev => prev.filter(s => s.id !== id));
       setPoints(prev => prev.filter(p => p.studentId !== id));
 
+      // Delete Points
       const { error: pointsError } = await supabase.from('points').delete().eq('studentId', id);
       if (pointsError) {
-        console.error('Failed to delete student points', pointsError);
-        // We continue to try deleting student, or maybe revert?
-        // If points delete fails, student delete will likely fail too if FK exists.
+        console.error('Failed to delete points', pointsError);
+        toast.error(`删除积分记录失败: ${pointsError.message}`);
+        loadRemoteData(); // Revert optimistic update
+        return;
       }
 
+      // Delete Attendance (just in case the table exists, even if feature is hidden)
+      // We accept error here in case table doesn't exist, but if it exists and fails, we should know.
+      // However, to be safe, we just try it.
+      const { error: attendanceError } = await supabase.from('attendance').delete().eq('studentId', id);
+      if (attendanceError) {
+        // Some users might not have attendance table if they didn't run full sql
+        // So we only log this, unless it's a constraint violation later.
+        console.warn('Attendance delete result:', attendanceError);
+      }
+
+      // Delete Student
       const { error } = await supabase.from('students').delete().eq('id', id);
       if (error) {
-        toast.error('Failed to delete student');
+        toast.error(`删除学生失败: ${error.message}`);
         console.error(error);
         loadRemoteData(); // Reload to restore state if failed
       } else {
-        toast.success('Student deleted!');
+        toast.success('学生已删除');
       }
     } else {
       setPoints(prev => prev.filter(p => p.studentId !== id));
